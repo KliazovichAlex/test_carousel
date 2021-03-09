@@ -1,0 +1,67 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.main {
+  background-color: #000;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+}
+
+.swiper {
+  display: flex;
+  overflow-x: visible;
+  transition-property: transform;
+  will-change: transform;
+  transition: 0.4s;
+}
+
+img {
+  min-width: 700px;
+  object-fit: cover;
+}
+
+.move {
+  display: flex;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 0;
+}
+
+.back {
+  left: 5px;
+}
+.next {
+  right: 5px;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+}
+
+.dot {
+  width: 20px;
+  height: 20px;
+  margin: 1rem 0.2rem;
+  background-color: rgb(116, 116, 84);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 100px) and (max-width: 480px) {
+  .dots {
+    width: 100vw;
+  }
+}
