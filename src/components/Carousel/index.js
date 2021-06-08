@@ -6,21 +6,54 @@ const IMG_HEIGHT = 400;
 
 class Carousel extends Component {
   lastTouch = 0;
-  state = {
-    imgs: [
-      "../src/img/1.jpg",
-      "../src/img/2.jpg",
-      "../src/img/3.jpg",
-      "../src/img/4.jpg",
-      "../src/img/5.jpg",
-    ],
-    currentIndex: 0,
-    movement: 0,
+  constructor(props) {
+    super(props)
+    this.state = {
+      currentIndex: 0,
+      movement: 0,
+      clickOn: false,
+    };
+  }
+
+  clickEventStart = (e) => {
+    this.clickOn = true
+    this.lastTouch = e.nativeEvent.clientX;
+    console.log(this.lastTouch);
+  }
+
+  clickEventMove = (e) => {
+    if(this.clickOn) {
+      const delta = this.lastTouch - e.clientX;
+      this.lastTouch = e.clientX;
+      this.handleMovement(delta);
+    }
+  }
+
+  clickEventEnd = (e)=> {
+    this.clickOn = false
+    this.handleMovementEnd();
+    this.lastTouch = 0;
+  }
+
+  handleTouchStart = (e) => {
+    this.lastTouch = e.nativeEvent.touches[0].clientX;
   };
+
+  handleTouchMove = (e) => {
+    const delta = this.lastTouch - e.nativeEvent.touches[0].clientX;
+    this.lastTouch = e.nativeEvent.touches[0].clientX;
+    this.handleMovement(delta);
+  };
+
+  handleTouchEnd = () => {
+    this.handleMovementEnd();
+    this.lastTouch = 0;
+  };
+  
 
   handleMovement = (delta) => {
     this.setState((state) => {
-      const maxLength = state.imgs.length - 1;
+      const maxLength = this.props.imgs.length - 1;
       let nextMovement = state.movement + delta;
 
       if (nextMovement < 0) {
@@ -37,25 +70,9 @@ class Carousel extends Component {
     });
   };
 
-  handleTouchStart = (e) => {
-    this.lastTouch = e.nativeEvent.touches[0].clientX;
-  };
-
-  handleTouchMove = (e) => {
-    const delta = this.lastTouch - e.nativeEvent.touches[0].clientX;
-    this.lastTouch = e.nativeEvent.touches[0].clientX;
-
-    this.handleMovement(delta);
-  };
-
-  handleTouchEnd = () => {
-    this.handleMovementEnd();
-    this.lastTouch = 0;
-  };
 
   handleMovementEnd = () => {
     const { movement, currentIndex } = this.state;
-
     const endPosition = movement / IMG_WIDTH;
     const endPartial = endPosition % 1;
     const endingIndex = endPosition - endPartial;
@@ -73,29 +90,22 @@ class Carousel extends Component {
       }
     }
 
-    this.transitionTo(nextIndex, Math.min(0.5, 1 - Math.abs(endPartial)));
+    this.transitionTo(nextIndex);
   };
 
-  transitionTo = (index, duration) => {
-    const { movement } = this.state;
+
+  transitionTo = (index) => {
     this.setState({
       currentIndex: index,
       movement: index * IMG_WIDTH,
-      transitionDuration: `${duration}s`,
     });
-
-    this.transitionTimeout = setTimeout(() => {
-      this.setState({ transitionDuration: "0s" });
-    }, duration * 100);
   };
 
-  componentWillUnmount = () => {
-    clearTimeout(this.transitionTimeout);
-  };
+  
 
   render() {
-    const { currentIndex, movement, transitionDuration, imgs } = this.state;
-    const maxLength = imgs.length - 1;
+    const { currentIndex, movement } = this.state;
+    const maxLength = this.props.imgs.length - 1;
     const maxMovement = maxLength * IMG_WIDTH;
     return (
       <div className="App">
@@ -108,7 +118,9 @@ class Carousel extends Component {
           onTouchStart={this.handleTouchStart}
           onTouchMove={this.handleTouchMove}
           onTouchEnd={this.handleTouchEnd}
-          onWheel={this.handleWheel}
+          onMouseDown ={this.clickEventStart}
+          onMouseMove ={this.clickEventMove}
+          onMouseUp  ={this.clickEventEnd}
         >
           <div
             className="swiper"
@@ -116,7 +128,7 @@ class Carousel extends Component {
               transform: `translateX(${movement * -1}px)`,
             }}
           >
-            {imgs.map((src) => {
+            {this.props.imgs.map((src) => {
               return <img key={src} src={src} width="100%" height="100%" />;
             })}
           </div>
@@ -151,7 +163,7 @@ class Carousel extends Component {
           }
         </div>
         <div className="dots">
-          {imgs.map((src, index) => {
+          {this.props.imgs.map((src, index) => {
             return (
               <div
                 key={index}

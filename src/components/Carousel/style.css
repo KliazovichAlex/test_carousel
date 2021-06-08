@@ -21,6 +21,7 @@
 img {
   min-width: 700px;
   object-fit: cover;
+  pointer-events: none;
 }
 
 .move {
@@ -46,6 +47,8 @@ img {
 }
 
 .dots {
+  position: absolute;               
+  left: calc(50% - 56px);                         
   display: flex;
   justify-content: center;
 }
